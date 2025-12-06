@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Next.jsテスト画面">
+  <title>テスト画面</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1 class="title">Next.js テスト画面</h1>
+      <p class="description">
+        このページはNext.jsの動作確認用のテスト画面です
+      </p>
+    </header>
+
+    <main class="main">
+      <section class="section">
+        <h2 class="sectionTitle">カウンター機能</h2>
+        <div class="counterContainer">
+          <button
+            class="button"
+            id="decrementBtn"
+            aria-label="減らす"
+          >
+            -
+          </button>
+          <span class="counter" id="counter">0</span>
+          <button
+            class="button"
+            id="incrementBtn"
+            aria-label="増やす"
+          >
+            +
+          </button>
+        </div>
+        <button
+          class="button resetButton"
+          id="resetBtn"
+        >
+          リセット
+        </button>
+      </section>
+
+      <section class="section">
+        <h2 class="sectionTitle">入力フォーム</h2>
+        <form id="messageForm" class="form">
+          <input
+            type="text"
+            id="messageInput"
+            placeholder="メッセージを入力..."
+            class="input"
+          />
+          <button type="submit" class="button">
+            送信
+          </button>
+        </form>
+      </section>
+
+      <section class="section">
+        <h2 class="sectionTitle">メッセージ一覧</h2>
+        <div id="messagesContainer">
+          <p class="emptyMessage">メッセージがありません</p>
+        </div>
+        <button
+          class="button clearButton"
+          id="clearBtn"
+          style="display: none;"
+        >
+          すべて削除
+        </button>
+      </section>
+
+      <section class="section">
+        <h2 class="sectionTitle">システム情報</h2>
+        <div class="infoGrid">
+          <div class="infoItem">
+            <span class="infoLabel">フレームワーク:</span>
+            <span class="infoValue">Next.js</span>
+          </div>
+          <div class="infoItem">
+            <span class="infoLabel">React:</span>
+            <span class="infoValue">18.3.1</span>
+          </div>
+          <div class="infoItem">
+            <span class="infoLabel">レンダリング:</span>
+            <span class="infoValue">Static HTML</span>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>© 2024 テスト画面</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
+
