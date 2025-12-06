@@ -7,6 +7,7 @@
 ### 方法1: Docker Compose（推奨）
 
 ```bash
+# プロジェクトルートから実行
 # コンテナをビルドして起動
 docker-compose up -d
 
@@ -20,6 +21,7 @@ docker-compose down
 ### 方法2: Docker
 
 ```bash
+# プロジェクトルートから実行
 # イメージをビルド
 docker build -t fastapi-backend .
 
@@ -80,6 +82,7 @@ uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ## Docker コマンド
 
 ```bash
+# プロジェクトルートから実行
 # コンテナの状態を確認
 docker-compose ps
 

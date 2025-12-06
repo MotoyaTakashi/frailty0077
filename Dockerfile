@@ -9,13 +9,13 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # 依存関係ファイルをコピー
-COPY requirements.txt .
+COPY application/requirements.txt .
 
 # Python依存関係をインストール
 RUN pip install --no-cache-dir -r requirements.txt
 
 # アプリケーションコードをコピー
-COPY main.py .
+COPY application/main.py .
 
 # ポート8000を公開
 EXPOSE 8000
