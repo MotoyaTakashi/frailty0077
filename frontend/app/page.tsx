@@ -6,7 +6,6 @@ import styles from './page.module.css'
 export default function TestPage() {
   const [count, setCount] = useState(0)
   const [inputValue, setInputValue] = useState('')
-  const [messages, setMessages] = useState<string[]>([])
 
   const handleIncrement = () => {
     setCount(count + 1)
@@ -23,13 +22,9 @@ export default function TestPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (inputValue.trim()) {
-      setMessages([...messages, inputValue])
+      console.log('送信されたメッセージ:', inputValue)
       setInputValue('')
     }
-  }
-
-  const clearMessages = () => {
-    setMessages([])
   }
 
   return (
@@ -84,51 +79,10 @@ export default function TestPage() {
             </button>
           </form>
         </section>
-
-        <section className={styles.section}>
-          <h2 className={styles.sectionTitle}>メッセージ一覧</h2>
-          {messages.length === 0 ? (
-            <p className={styles.emptyMessage}>メッセージがありません</p>
-          ) : (
-            <>
-              <ul className={styles.messageList}>
-                {messages.map((message, index) => (
-                  <li key={index} className={styles.messageItem}>
-                    {message}
-                  </li>
-                ))}
-              </ul>
-              <button
-                className={`${styles.button} ${styles.clearButton}`}
-                onClick={clearMessages}
-              >
-                すべて削除
-              </button>
-            </>
-          )}
-        </section>
-
-        <section className={styles.section}>
-          <h2 className={styles.sectionTitle}>システム情報</h2>
-          <div className={styles.infoGrid}>
-            <div className={styles.infoItem}>
-              <span className={styles.infoLabel}>フレームワーク:</span>
-              <span className={styles.infoValue}>Next.js</span>
-            </div>
-            <div className={styles.infoItem}>
-              <span className={styles.infoLabel}>React:</span>
-              <span className={styles.infoValue}>18.3.1</span>
-            </div>
-            <div className={styles.infoItem}>
-              <span className={styles.infoLabel}>レンダリング:</span>
-              <span className={styles.infoValue}>Client Component</span>
-            </div>
-          </div>
-        </section>
       </main>
 
       <footer className={styles.footer}>
-        <p>© 2024 テスト画面</p>
+        <p>© 2024 テスト画面です。</p>
       </footer>
     </div>
   )
