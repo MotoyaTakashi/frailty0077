@@ -34,21 +34,6 @@ steps:
       - 'gcr.io/$PROJECT_ID/fastapi-backend'
     waitFor: ['build-backend']
 
-  # フロントエンドをFirebase Hostingにデプロイ
-  - name: 'node:18'
-    id: 'deploy-frontend'
-    entrypoint: 'bash'
-    args:
-      - '-c'
-      - |
-        npm install -g firebase-tools
-        if [ -z "${_FIREBASE_TOKEN}" ]; then
-          echo "Error: FIREBASE_TOKEN is not set. Please provide a valid Firebase token."
-          exit 1
-        fi
-        firebase deploy --only hosting --project ${_FIREBASE_PROJECT_ID} --token ${_FIREBASE_TOKEN} --non-interactive
-    waitFor: ['build-frontend']
-
   # バックエンドをCloud Runにデプロイ（オプション）
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     id: 'deploy-backend'
