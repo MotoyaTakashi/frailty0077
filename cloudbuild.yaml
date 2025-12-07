@@ -7,7 +7,7 @@ steps:
       - '-c'
       - |
         cd frontend
-        npm ci
+        npm install
         npm run build
     waitFor: ['-']
 
