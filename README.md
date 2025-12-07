@@ -8,6 +8,9 @@
 frailty0077/
 ├── frontend/          # Next.js フロントエンド
 ├── application/       # FastAPI バックエンド
+├── Dockerfile         # バックエンド用Dockerfile
+├── docker-compose.yml # Docker Compose設定
+├── cloudbuild.yaml    # Google Cloud Build設定
 └── firebase.json      # Firebase Hosting設定
 ```
 
@@ -25,52 +28,69 @@ npm run dev
 
 ### 2. バックエンド（FastAPI）
 
+#### Docker Composeで起動（推奨）
+
+```bash
+# プロジェクトルートから実行
+docker-compose up -d
+```
+
+#### ローカル環境（開発用）
+
 ```bash
 cd application
-
-# 仮想環境を作成（推奨）
 python -m venv venv
-
-# 仮想環境を有効化
-# Windows
-venv\Scripts\activate
-# Linux/Mac
-source venv/bin/activate
-
-# 依存関係をインストール
+venv\Scripts\activate  # Windows
 pip install -r requirements.txt
-
-# サーバーを起動
 python main.py
 ```
 
 バックエンドは `http://localhost:8000` で起動します。
 
-## 使用方法
+## テスト
 
-1. バックエンドサーバーを起動（`application`ディレクトリで）
-2. フロントエンドサーバーを起動（`frontend`ディレクトリで）
-3. ブラウザで `http://localhost:3000` にアクセス
+### フロントエンドのテスト
 
-## API接続設定
-
-フロントエンドからバックエンドAPIに接続する際のURLは、`frontend/lib/api.ts`で設定されています。
-
-デフォルト: `http://localhost:8000`
-
-環境変数で変更する場合は、`NEXT_PUBLIC_API_URL`を設定してください。
+```bash
+cd frontend
+npm test              # テスト実行
+npm run test:watch    # ウォッチモード
+npm run test:coverage # カバレッジレポート
+```
 
 ## デプロイ
 
-### Firebase Hostingへのデプロイ
+### Google Cloud Buildを使用
 
 ```bash
-# フロントエンドをビルド
+# Cloud Buildでビルドとデプロイを実行
+gcloud builds submit --config=cloudbuild.yaml
+
+# 置換変数を指定する場合
+gcloud builds submit --config=cloudbuild.yaml \
+  --substitutions=_REGION=asia-northeast1,_FIREBASE_TOKEN=YOUR_TOKEN
+```
+
+### Firebase Hostingへのデプロイ（フロントエンドのみ）
+
+```bash
 cd frontend
 npm run build
-
-# Firebaseにデプロイ
 firebase deploy
+```
+
+### Dockerでバックエンドをデプロイ
+
+```bash
+# イメージをビルド
+docker build -t fastapi-backend .
+
+# Cloud Runにデプロイ
+gcloud run deploy fastapi-backend \
+  --image gcr.io/PROJECT_ID/fastapi-backend \
+  --region asia-northeast1 \
+  --platform managed \
+  --allow-unauthenticated
 ```
 
 ## API ドキュメント
@@ -78,3 +98,18 @@ firebase deploy
 バックエンドサーバー起動後、以下のURLでAPIドキュメントを確認できます：
 - Swagger UI: `http://localhost:8000/docs`
 - ReDoc: `http://localhost:8000/redoc`
+
+## Cloud Build設定
+
+`cloudbuild.yaml`には以下のステップが含まれています：
+
+1. **フロントエンドのビルド** - Next.jsアプリをビルド
+2. **バックエンドのDockerイメージビルド** - FastAPIアプリをDockerイメージ化
+3. **Dockerイメージのプッシュ** - Container Registryにプッシュ
+4. **Firebase Hostingへのデプロイ** - フロントエンドをデプロイ
+5. **Cloud Runへのデプロイ** - バックエンドをデプロイ
+
+### 必要な環境変数
+
+- `_FIREBASE_TOKEN`: Firebase CLIの認証トークン
+- `_REGION`: Cloud Runのリージョン（デフォルト: asia-northeast1）
