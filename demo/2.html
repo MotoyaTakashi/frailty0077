@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>TANITA Record 体組成＋フレイル モック</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+        "Helvetica Neue", "Segoe UI", sans-serif;
+    }
+
+    body {
+      background: #101418;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 16px;
+      font-size: 16px;
+    }
+
+    .phone {
+      width: 390px;
+      max-width: 100%;
+      height: 844px;
+      max-height: 100%;
+      background: #f5f5f5;
+      border-radius: 32px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 0 0 4px #000, 0 20px 50px rgba(0, 0, 0, 0.6);
+    }
+
+    .header {
+      height: 110px;
+      background: linear-gradient(90deg, #0080c6, #00b48f);
+      color: #fff;
+      padding: 36px 18px 12px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .hamburger {
+      width: 28px;
+      height: 28px;
+      position: relative;
+    }
+    .hamburger span {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: #fff;
+      border-radius: 999px;
+    }
+    .hamburger span:nth-child(1) { top: 4px; }
+    .hamburger span:nth-child(2) { top: 11px; }
+    .hamburger span:nth-child(3) { top: 18px; }
+
+    .app-title {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .header-sub {
+      font-size: 13px;
+      opacity: 0.9;
+      margin-top: 2px;
+    }
+
+    .refresh {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 2px solid #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+    }
+
+    .content {
+      position: absolute;
+      top: 110px;
+      bottom: 70px;
+      left: 0;
+      right: 0;
+      padding: 12px 14px 14px;
+      overflow-y: auto;
+      background: #f5f5f5;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 18px;
+      padding: 16px 18px 18px;
+      margin-bottom: 14px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+    }
+
+    .card-title-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .card-title-sub {
+      font-size: 14px;
+      color: #555;
+    }
+
+    .card-sub {
+      font-size: 15px;
+      color: #555;
+      margin-bottom: 10px;
+      line-height: 1.6;
+    }
+
+    /* 体組成カード */
+    .weight-main {
+      margin-bottom: 10px;
+    }
+
+    .weight-label-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+
+    .weight-label {
+      font-size: 14px;
+      color: #666;
+    }
+
+    .weight-value {
+      font-size: 34px;
+      font-weight: 800;
+      color: #1565c0;
+    }
+
+    .weight-value span {
+      font-size: 16px;
+      margin-left: 4px;
+      color: #444;
+      font-weight: 600;
+    }
+
+    .weight-diff {
+      font-size: 14px;
+      color: #555;
+    }
+
+    .metrics {
+      margin-top: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .metric-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .metric-label {
+      font-size: 14px;
+      color: #555;
+    }
+
+    .metric-value {
+      font-size: 16px;
+      font-weight: 700;
+      color: #222;
+    }
+
+    .metric-bar {
+      margin-top: 4px;
+      height: 10px;
+      border-radius: 999px;
+      background: #e0e0e0;
+      overflow: hidden;
+    }
+
+    .metric-bar-fill-fat {
+      width: 60%;
+      height: 100%;
+      background: #ffca28;
+    }
+
+    .metric-bar-fill-muscle {
+      width: 55%;
+      height: 100%;
+      background: #42a5f5;
+    }
+
+    .metric-bar-fill-bmi {
+      width: 50%;
+      height: 100%;
+      background: #66bb6a;
+    }
+
+    .metric-bar-fill-visc {
+      width: 45%;
+      height: 100%;
+      background: #ab47bc;
+    }
+
+    .metric-caption {
+      font-size: 12px;
+      color: #777;
+      margin-top: 2px;
+    }
+
+    .divider {
+      border-top: 1px dashed #e0e0e0;
+      margin: 10px 0 12px;
+    }
+
+    /* フレイルカード */
+    .frail-score-main-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .frail-status {
+      font-size: 24px;
+      font-weight: 800;
+      color: #fb8c00;
+    }
+
+    .frail-score-block {
+      text-align: right;
+    }
+
+    .frail-score-label {
+      font-size: 13px;
+      color: #666;
+    }
+
+    .frail-score-value {
+      font-size: 30px;
+      font-weight: 800;
+      color: #1565c0;
+    }
+
+    .frail-score-value span {
+      font-size: 16px;
+      color: #444;
+    }
+
+    .frail-scale-wrap {
+      margin: 4px 0 10px;
+    }
+
+    .frail-scale-bar {
+      display: flex;
+      height: 20px;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-bottom: 4px;
+    }
+
+    .frail-scale-bar div {
+      flex: 1;
+    }
+
+    .frail-good { background: #c8e6c9; }
+    .frail-pre  { background: #ffe0b2; }
+    .frail-bad  { background: #ffcdd2; }
+
+    .frail-scale-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #555;
+      margin-bottom: 4px;
+    }
+
+    .frail-pointer-row {
+      position: relative;
+      height: 18px;
+    }
+
+    .frail-pointer {
+      position: absolute;
+      left: 55%; /* 0〜100点のうち、プレフレイル真ん中あたり */
+      transform: translateX(-50%);
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .frail-pointer-arrow {
+      width: 0;
+      height: 0;
+      border-left: 9px solid transparent;
+      border-right: 9px solid transparent;
+      border-bottom: 12px solid #fb8c00;
+    }
+
+    .frail-pointer-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #fb8c00;
+      border: 2px solid #ffffff;
+      box-shadow: 0 0 0 1px rgba(0,0,0,0.2);
+    }
+
+    .frail-range-text {
+      font-size: 13px;
+      color: #444;
+      line-height: 1.5;
+      margin-bottom: 8px;
+    }
+
+    .frail-sub-scores {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .frail-sub-item {
+      text-align: center;
+      background: #f9fafb;
+      border-radius: 10px;
+      padding: 8px 4px;
+    }
+
+    .frail-sub-label {
+      font-size: 12px;
+      color: #777;
+      margin-bottom: 2px;
+    }
+
+    .frail-sub-value {
+      font-size: 18px;
+      font-weight: 700;
+      color: #222;
+    }
+
+    .frail-advice {
+      font-size: 14px;
+      color: #555;
+      background: #f1f8e9;
+      border-radius: 10px;
+      border: 1px solid #c5e1a5;
+      padding: 8px 10px;
+      line-height: 1.6;
+    }
+
+    /* footer nav */
+    .footer {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 70px;
+      background: #ffffff;
+      border-top: 1px solid #ddd;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      font-size: 12px;
+      color: #777;
+    }
+
+    .footer-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .footer-icon {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      border: 1.5px solid #999;
+    }
+
+    .footer-item--active {
+      color: #0080c6;
+      font-weight: 600;
+    }
+
+    .footer-item--active .footer-icon {
+      border-color: #0080c6;
+      background: #e3f2fd;
+    }
+  </style>
+</head>
+<body>
+  <div class="phone">
+    <div class="header">
+      <div class="header-left">
+        <div class="hamburger">
+          <span></span><span></span><span></span>
+        </div>
+        <div>
+          <div class="app-title">TANITA Record</div>
+          <div class="header-sub">2023/11/07 (火) 11:11 測定</div>
+        </div>
+      </div>
+      <div class="refresh">⟳</div>
+    </div>
+
+    <div class="content">
+      <!-- 今日の体組成カード -->
+      <div class="card">
+        <div class="card-title-row">
+          <div class="card-title">今日の体組成</div>
+          <div class="card-title-sub">体重・体脂肪・筋肉量・BMI・内臓脂肪</div>
+        </div>
+
+        <div class="weight-main">
+          <div class="weight-label-row">
+            <div class="weight-label">体重</div>
+            <div class="weight-value">66.8<span>kg</span></div>
+          </div>
+          <div class="weight-diff">3ヶ月で -2.1kg（前回より -0.3kg）</div>
+        </div>
+
+        <div class="metrics">
+          <div>
+            <div class="metric-row">
+              <div class="metric-label">体脂肪率</div>
+              <div class="metric-value">35.8 %</div>
+            </div>
+            <div class="metric-bar">
+              <div class="metric-bar-fill-fat"></div>
+            </div>
+            <div class="metric-caption">やせすぎ〜標準の境目に近い状態です。</div>
+          </div>
+
+          <div>
+            <div class="metric-row">
+              <div class="metric-label">筋肉量</div>
+              <div class="metric-value">41.5 kg</div>
+            </div>
+            <div class="metric-bar">
+              <div class="metric-bar-fill-muscle"></div>
+            </div>
+            <div class="metric-caption">同年代平均よりやや少なめです（フレイル注意）。</div>
+          </div>
+
+          <div>
+            <div class="metric-row">
+              <div class="metric-label">BMI</div>
+              <div class="metric-value">24.3</div>
+            </div>
+            <div class="metric-bar">
+              <div class="metric-bar-fill-bmi"></div>
+            </div>
+            <div class="metric-caption">21〜24がフレイルリスクの低いゾーンです。</div>
+          </div>
+
+          <div>
+            <div class="metric-row">
+              <div class="metric-label">内臓脂肪レベル</div>
+              <div class="metric-value">5.0</div>
+            </div>
+            <div class="metric-bar">
+              <div class="metric-bar-fill-visc"></div>
+            </div>
+            <div class="metric-caption">生活習慣病リスクは低めです。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 今日のフレイルカード -->
+      <div class="card">
+        <div class="card-title-row">
+          <div class="card-title">今日のフレイル</div>
+          <div class="card-title-sub">体組成＋生活リズム＋こころ から判定</div>
+        </div>
+
+        <div class="frail-score-main-row">
+          <div class="frail-status">プレフレイル</div>
+          <div class="frail-score-block">
+            <div class="frail-score-label">フレイルスコア</div>
+            <div class="frail-score-value">56<span> / 100</span></div>
+          </div>
+        </div>
+
+        <div class="frail-scale-wrap">
+          <div class="frail-scale-bar">
+            <div class="frail-good"></div>
+            <div class="frail-pre"></div>
+            <div class="frail-bad"></div>
+          </div>
+          <div class="frail-scale-labels">
+            <span>非フレイル 0〜39</span>
+            <span>プレフレイル 40〜69</span>
+            <span>フレイル 70〜100</span>
+          </div>
+          <div class="frail-pointer-row">
+            <div class="frail-pointer">
+              <div class="frail-pointer-arrow"></div>
+              <div class="frail-pointer-dot"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="frail-range-text">
+          あなたはいま<strong>プレフレイル（56点）</strong>です。<br>
+          体重減少と筋肉量の低下が、フレイル側に少し傾いてきています。
+        </div>
+
+        <div class="frail-sub-scores">
+          <div class="frail-sub-item">
+            <div class="frail-sub-label">からだ</div>
+            <div class="frail-sub-value">63</div>
+          </div>
+          <div class="frail-sub-item">
+            <div class="frail-sub-label">生活リズム</div>
+            <div class="frail-sub-value">71</div>
+          </div>
+          <div class="frail-sub-item">
+            <div class="frail-sub-label">こころ</div>
+            <div class="frail-sub-value">52</div>
+          </div>
+        </div>
+
+        <div class="frail-advice">
+          <strong>今日のおすすめ</strong><br>
+          ・夕方に10分だけ外を歩いて、体を動かしましょう。<br>
+          ・眠りが浅い日が続いている場合は、寝る前のスマホ時間を少し減らしてみてください。<br>
+          ・「こころ」のスコアが少し低めです。家族や友だちに短い電話をするだけでも、フレイル予防につながります。
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div class="footer-item footer-item--active">
+        <div class="footer-icon"></div>
+        <div>ホーム</div>
+      </div>
+      <div class="footer-item">
+        <div class="footer-icon"></div>
+        <div>体組成</div>
+      </div>
+      <div class="footer-item">
+        <div class="footer-icon"></div>
+        <div>データ</div>
+      </div>
+      <div class="footer-item">
+        <div class="footer-icon"></div>
+        <div>設定</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

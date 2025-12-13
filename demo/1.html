@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>TANITA Record フレイル＋バイタル測定デモ v4</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+        "Helvetica Neue", "Segoe UI", sans-serif;
+    }
+
+    body {
+      background: #111;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      font-size: 16px;
+    }
+
+    .phone {
+      width: 390px;
+      height: 844px;
+      background: #f5f5f5;
+      border-radius: 32px;
+      overflow: hidden;
+      box-shadow: 0 0 0 4px #000, 0 16px 40px rgba(0, 0, 0, 0.6);
+      position: relative;
+    }
+
+    .header {
+      height: 120px;
+      background: linear-gradient(90deg, #0080c6, #00b48f);
+      color: #fff;
+      padding: 40px 16px 10px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      position: relative;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .hamburger {
+      width: 24px;
+      height: 24px;
+      position: relative;
+    }
+
+    .hamburger span {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: #fff;
+      border-radius: 2px;
+    }
+
+    .hamburger span:nth-child(1) { top: 4px; }
+    .hamburger span:nth-child(2) { top: 11px; }
+    .hamburger span:nth-child(3) { top: 18px; }
+
+    .app-title {
+      font-size: 20px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .refresh {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 2px solid #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .content {
+      position: absolute;
+      top: 120px;
+      bottom: 80px;
+      left: 0;
+      right: 0;
+      padding: 12px 14px 80px;
+      background: #f5f5f5;
+      overflow-y: auto;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 14px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+      padding: 14px 16px 16px;
+      margin-bottom: 14px;
+    }
+
+    .card-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 4px;
+      gap: 8px;
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 600;
+      white-space: nowrap;
+      display: inline-block;
+    }
+
+    .chip {
+      font-size: 13px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: #e3f2fd;
+      color: #1565c0;
+      display: inline-block;
+      max-width: 100%;
+      white-space: normal;
+      word-break: keep-all;
+    }
+
+    .card-sub {
+      font-size: 14px;
+      color: #777;
+      margin-bottom: 8px;
+      line-height: 1.4;
+    }
+
+    .section-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: #555;
+      margin-bottom: 4px;
+    }
+
+    .bodycomp-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px 10px;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
+    .bodycomp-item-label {
+      color: #888;
+    }
+
+    .bodycomp-item-value {
+      font-weight: 600;
+      color: #333;
+    }
+
+    .divider {
+      border-top: 1px dashed #e0e0e0;
+      margin: 8px 0 10px;
+    }
+
+    .vital-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 6px;
+      font-size: 13px;
+      margin-bottom: 6px;
+    }
+
+    .vital-item {
+      text-align: center;
+      padding: 6px 4px;
+      border-radius: 10px;
+      background: #f9fafb;
+    }
+
+    .vital-label {
+      color: #777;
+      margin-bottom: 2px;
+      white-space: nowrap;
+    }
+
+    .vital-value {
+      font-size: 16px;
+      font-weight: 600;
+      color: #333;
+      white-space: nowrap;
+    }
+
+    .vital-tag {
+      margin-top: 2px;
+      font-size: 12px;
+      padding: 2px 6px;
+      border-radius: 999px;
+      display: inline-block;
+      background: #e3f2fd;
+      color: #1565c0;
+      white-space: nowrap;
+    }
+
+    .question {
+      margin-bottom: 8px;
+    }
+
+    .question-label {
+      font-size: 14px;
+      margin-bottom: 4px;
+      color: #555;
+    }
+
+    .options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .option-pill {
+      font-size: 13px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid #d0d7e2;
+      background: #f8fafc;
+      color: #374151;
+      white-space: nowrap;
+    }
+
+    .option-pill.active {
+      background: #1565c0;
+      color: #fff;
+      border-color: #1565c0;
+    }
+
+    .score-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 4px 0 10px;
+      gap: 8px;
+    }
+
+    .score-main {
+      font-size: 26px;
+      font-weight: 700;
+      color: #1565c0;
+      white-space: nowrap;
+    }
+
+    .score-main span {
+      font-size: 15px;
+      font-weight: 500;
+      color: #777;
+      margin-left: 4px;
+    }
+
+    .score-pill {
+      font-size: 14px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: #fff3e0;
+      color: #e65100;
+      border: 1px solid #ffe0b2;
+      white-space: nowrap;
+    }
+
+    .score-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 6px;
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    .score-item {
+      text-align: center;
+      padding: 6px 4px;
+      border-radius: 10px;
+      background: #f9fafb;
+    }
+
+    .score-item-label {
+      color: #777;
+      margin-bottom: 2px;
+    }
+
+    .score-item-value {
+      font-size: 17px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .advice {
+      font-size: 14px;
+      color: #555;
+      background: #f1f8e9;
+      border-radius: 8px;
+      padding: 6px 8px;
+      border: 1px solid #c5e1a5;
+      line-height: 1.4;
+    }
+
+    .note {
+      font-size: 12px;
+      color: #9e9e9e;
+      margin-top: 6px;
+      line-height: 1.4;
+    }
+
+    .bottom-nav {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 80px;
+      background: #ffffff;
+      border-top: 1px solid #e0e0e0;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      padding: 0 60px;
+    }
+
+    .nav-item {
+      text-align: center;
+      font-size: 14px;
+      color: #888;
+    }
+
+    .nav-icon {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      border: 2px solid #888;
+      margin: 0 auto 2px;
+    }
+
+    .nav-item.active {
+      color: #1565c0;
+    }
+
+    .nav-item.active .nav-icon {
+      border-color: #1565c0;
+      background: #e3f2fd;
+    }
+
+    .fab {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 46px;
+      width: 76px;
+      height: 76px;
+      border-radius: 50%;
+      background: #1976d2;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 14px;
+    }
+
+    .fab-icon {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 2px solid #fff;
+      margin-bottom: 4px;
+      position: relative;
+    }
+
+    .fab-icon::after {
+      content: "";
+      position: absolute;
+      left: 5px;
+      right: 5px;
+      bottom: 4px;
+      height: 2px;
+      border-radius: 2px;
+      background: #fff;
+    }
+  
+    .frail-scale-wrap {
+      margin-bottom: 14px;
+    }
+    .frail-scale-bar {
+      display: flex;
+      height: 24px;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-bottom: 4px;
+    }
+    .frail-scale-bar div { flex: 1; }
+    .frail-good { background: #c8e6c9; }
+    .frail-pre  { background: #ffe0b2; }
+    .frail-bad  { background: #ffcdd2; }
+    .frail-scale-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: #555;
+      margin-bottom: 4px;
+    }
+    .frail-pointer-row {
+      position: relative;
+      height: 20px;
+    }
+    .frail-pointer {
+      position: absolute;
+      left: 60%; /* 70点くらいのイメージ */ 
+      transform: translateX(-50%);
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+    .frail-pointer-arrow {
+      width: 0;
+      height: 0;
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-bottom: 14px solid #fb8c00;
+    }
+    .frail-pointer-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #fb8c00;
+      border: 2px solid #fff;
+      box-shadow: 0 0 0 1px rgba(0,0,0,0.2);
+    }
+
+  </style>
+</head>
+<body>
+<div class="phone">
+  <!-- ヘッダー -->
+  <div class="header">
+    <div class="header-left">
+      <div class="hamburger">
+        <span></span><span></span><span></span>
+      </div>
+      <div class="app-title">TANITA Record</div>
+    </div>
+    <div class="refresh">⟳</div>
+  </div>
+
+  <!-- コンテンツ -->
+  <div class="content">
+    <!-- 体組成 ＋ face.ing と 質問 -->
+    <div class="card">
+      <div class="card-title-row">
+        <div class="card-title">今日のからだチェック（ベータ）</div>
+        <div class="chip">体組成 × face.ing × 質問</div>
+      </div>
+      <div class="card-sub">
+        体組成計のデータと、face.ingで読み取ったからだの状態、かんたんな質問を組み合わせて、今日の状態を整理しました。
+      </div>
+
+      <div class="section-label">今日の体組成</div>
+      <div class="bodycomp-grid">
+        <div>
+          <div class="bodycomp-item-label">測定日時</div>
+          <div class="bodycomp-item-value">2025/01/10 08:12</div>
+        </div>
+        <div>
+          <div class="bodycomp-item-label">体重</div>
+          <div class="bodycomp-item-value">58.3 kg</div>
+        </div>
+        <div>
+          <div class="bodycomp-item-label">BMI</div>
+          <div class="bodycomp-item-value">22.1</div>
+        </div>
+        <div>
+          <div class="bodycomp-item-label">体脂肪率</div>
+          <div class="bodycomp-item-value">26.4 %</div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="section-label">face.ingでわかった主なバイタル</div>
+      <div class="vital-grid">
+        <div class="vital-item">
+          <div class="vital-label">脈の速さ</div>
+          <div class="vital-value">やや速め</div>
+          <div class="vital-tag">少し緊張ぎみ</div>
+        </div>
+        <div class="vital-item">
+          <div class="vital-label">呼吸のリズム</div>
+          <div class="vital-value">ほぼ一定</div>
+          <div class="vital-tag">問題なし</div>
+        </div>
+        <div class="vital-item">
+          <div class="vital-label">ストレスのかかり具合</div>
+          <div class="vital-value">やや高め</div>
+          <div class="vital-tag">休息おすすめ</div>
+        </div>
+        <div class="vital-item">
+          <div class="vital-label">血のめぐり</div>
+          <div class="vital-value">少し強め</div>
+          <div class="vital-tag">むくみ注意</div>
+        </div>
+        <div class="vital-item">
+          <div class="vital-label">睡眠の足りなさサイン</div>
+          <div class="vital-value">あり</div>
+          <div class="vital-tag">早寝を意識</div>
+        </div>
+        <div class="vital-item">
+          <div class="vital-label">自律神経のバランス</div>
+          <div class="vital-value">やや交感神経優位</div>
+          <div class="vital-tag">ゆっくりタイムを</div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="section-label">かんたん質問（3問）</div>
+
+      <div class="question">
+        <div class="question-label">1. 最近1週間で外出した日は？</div>
+        <div class="options">
+          <span class="option-pill">0日</span>
+          <span class="option-pill active">1〜2日</span>
+          <span class="option-pill">3〜4日</span>
+          <span class="option-pill">5日以上</span>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="question-label">2. 誰かと会話する日はどれくらいありますか？</div>
+        <div class="options">
+          <span class="option-pill">ほとんどない</span>
+          <span class="option-pill active">週に1〜2日</span>
+          <span class="option-pill">週に3〜4日</span>
+          <span class="option-pill">ほぼ毎日</span>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="question-label">3. 以前より疲れやすくなったと感じますか？</div>
+        <div class="options">
+          <span class="option-pill">いいえ</span>
+          <span class="option-pill active">少しそう思う</span>
+          <span class="option-pill">かなりそう思う</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- フレイル結果 ＋ アドバイス -->
+    <div class="card">
+      <div class="card-title-row">
+        <div class="card-title">今日のフレイル結果</div>
+      </div>
+      
+      <div class="score-row">
+        <div class="score-main">70<span>/ 100</span></div>
+        <div class="score-pill">プレフレイル（少し気をつけたい）</div>
+      </div>
+      <div class="frail-scale-wrap">
+        <div class="frail-scale-bar">
+          <div class="frail-good"></div>
+          <div class="frail-pre"></div>
+          <div class="frail-bad"></div>
+        </div>
+        <div class="frail-scale-labels">
+          <span>非フレイル&nbsp;0〜39</span>
+          <span>プレフレイル&nbsp;40〜69</span>
+          <span>フレイル&nbsp;70〜100</span>
+        </div>
+        <div class="frail-pointer-row">
+          <div class="frail-pointer">
+            <div class="frail-pointer-arrow"></div>
+            <div class="frail-pointer-dot"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="score-grid">
+        <div class="score-item">
+          <div class="score-item-label">からだ</div>
+          <div class="score-item-value">64</div>
+        </div>
+        <div class="score-item">
+          <div class="score-item-label">生活リズム</div>
+          <div class="score-item-value">72</div>
+        </div>
+        <div class="score-item">
+          <div class="score-item-label">こころ</div>
+          <div class="score-item-value">69</div>
+        </div>
+      </div>
+
+      <div class="advice">
+        <b>今日のおすすめ</b><br>
+        ・脈の速さとストレス指標がやや高めです。深呼吸や、ぬるめのお風呂で体と頭をいったんリセットしましょう。<br>
+        ・外出や会話がやや少なめです。ご家族や友人に短い電話やメッセージを送ってみると、こころのスコア改善につながりやすくなります。<br>
+        ・睡眠の足りなさサインが出ています。寝る前のスマホ時間を10〜15分減らすだけでも、翌日の状態が変わりやすくなります。
+      </div>
+          </div>
+  </div>
+
+  <!-- 中央の測定ボタン -->
+  <div class="fab">
+    <div class="fab-icon"></div>
+    <div>測定する</div>
+  </div>
+
+  <!-- 下部ナビ -->
+  <div class="bottom-nav">
+    <div class="nav-item active">
+      <div class="nav-icon"></div>
+      <div>ホーム</div>
+    </div>
+    <div class="nav-item">
+      <div class="nav-icon"></div>
+      <div>体組成</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
